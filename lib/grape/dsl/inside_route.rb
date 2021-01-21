@@ -353,7 +353,8 @@ module Grape
                       else
                         [nil, args.first]
                       end
-        entity_class = entity_class_for_obj(object, options)
+        entity_class = entity_class_from_key(key)
+        entity_class = entity_class_for_obj(object, options) unless entity_class
 
         root = options.delete(:root)
 
@@ -385,6 +386,21 @@ module Grape
       #   end
       def route
         env[Grape::Env::GRAPE_ROUTING_ARGS][:route_info]
+      end
+
+      def entity_class_from_key(key)
+        return nil unless route_setting(:entity)
+
+        root_entity_class = route_setting(:entity)
+        exposures = root_entity_class.root_exposures.instance_eval { @exposures }
+        exposure = exposures.find { |exposure| exposure.key == key }
+        return nil unless exposure
+
+        entity_class = exposure.try(:using_class_name)
+        return nil unless entity_class
+
+        entity_class = root_entity_class.const_get(entity_class) if entity_class.is_a?(String)
+        entity_class
       end
 
       # Attempt to locate the Entity class for a given object, if not given

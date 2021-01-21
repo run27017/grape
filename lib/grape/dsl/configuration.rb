@@ -11,6 +11,7 @@ module Grape
         include Grape::DSL::Settings
         include Grape::DSL::Logger
         include Grape::DSL::Desc
+        include Grape::DSL::Entity
       end
     end
   end
