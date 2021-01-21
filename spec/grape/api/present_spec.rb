@@ -10,23 +10,25 @@ describe Grape::API do
     subject
   end
 
-  describe '.present' do
-    context 'with entity dsl' do
-      it 'resolves entity class based on key' do
-        entity_class = Class.new(Grape::Entity) do
-          def inspect
-            'entity_class'.inspect
-          end
-        end
+  def inspected_entity_class(inspected = 'entity_class')
+    Class.new(Grape::Entity) do
+      define_method(:inspect) { inspected.inspect }
+    end
+  end
 
-        subject.entity do
+  describe '.present' do
+    context 'with status dsl' do
+      it 'resolves entity class based on key' do
+        entity_class = inspected_entity_class
+
+        subject.status 200 do
           expose :a
           expose :b, using: entity_class
         end
-
         subject.get do
+          status 200
           present :a, 1
-          present :b, nil
+          present :b, 2
         end
 
         get '/'
@@ -35,25 +37,124 @@ describe Grape::API do
       end
 
       it 'resolves entity class based on entity name' do
-        class Entity_02 < Grape::Entity
-          def inspect
-            'entity_class'.inspect
-          end
-        end
+        Entity_02 = inspected_entity_class
 
-        subject.entity do
+        subject.status 200 do
           expose :a
           expose :b, using: 'Entity_02'
         end
-
         subject.get do
+          status 200
           present :a, 1
-          present :b, nil
+          present :b, 2
         end
 
         get '/'
         expect(last_response.status).to eql 200
         expect(eval last_response.body).to eql(a: 1, b: 'entity_class')
+      end
+
+      it 'presents without defining status' do
+        entity_class = inspected_entity_class
+
+        subject.status 200 do
+          expose :a
+          expose :b, using: entity_class
+        end
+        subject.get do
+          present :a, 1
+          present :b, 2
+        end
+
+        get '/'
+        expect(last_response.status).to eql 200
+        expect(eval last_response.body).to eql(a: 1, b: 'entity_class')
+      end
+
+      it 'supports namespace scope' do
+        entity_class = inspected_entity_class
+
+        subject.status 200 do
+          expose :value, using: entity_class
+        end
+        subject.namespace '/foo' do
+          get do
+            present :value, 'foo' 
+          end
+
+          put do
+            present :value, 'bar' 
+          end
+        end
+
+        get '/foo'
+        expect(last_response.status).to eql 200
+        expect(eval last_response.body).to eql(value: 'entity_class')
+
+        put '/foo'
+        expect(last_response.status).to eql 200
+        expect(eval last_response.body).to eql(value: 'entity_class')
+      end
+    end
+
+    context 'with entity dsl' do
+      context 'status code not provided' do
+        it 'is resolved as default entity class' do
+          entity_class = inspected_entity_class
+
+          subject.entity do
+            expose :a
+            expose :b, using: entity_class
+          end
+          subject.get do
+            status 400
+            present :a, 1
+            present :b, 2
+          end
+
+          get '/'
+          expect(last_response.status).to eql 400
+          expect(eval last_response.body).to eql(a: 1, b: 'entity_class')
+        end
+      end
+    end
+
+    context 'with success and fail dsl' do
+      context 'status code not provided' do
+        before do
+          success_class = inspected_entity_class 'success'
+          fail_class = inspected_entity_class 'fail'
+
+          subject.success do
+            expose :value, using: success_class
+          end
+          subject.entity do
+            expose :value, using: fail_class
+          end
+          subject.namespace '/foo' do
+            get '/success' do
+              status 200
+              present :value, nil 
+            end
+
+            get '/fail' do
+              status 400
+              present :value, nil 
+            end
+          end
+        end
+
+        it 'is resolved as default success entity class' do
+          get '/foo/success'
+          expect(last_response.status).to eql 200
+          expect(eval last_response.body).to eql(value: 'success')
+        end
+
+        it 'is resolved as default fail entity class' do
+          get '/foo/fail'
+          expect(last_response.status).to eql 400
+          expect(eval last_response.body).to eql(value: 'fail')
+        end
       end
     end
   end

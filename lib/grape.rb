@@ -190,7 +190,7 @@ module Grape
       autoload :Validations
       autoload :Logger
       autoload :Desc
-      autoload :Entity
+      autoload :Status
     end
   end
 
