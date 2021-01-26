@@ -389,13 +389,14 @@ module Grape
       end
 
       def entity_class_from_key(key)
-        status_setting = route_setting :status
-        return nil unless status_setting
+        status_settings = route_setting :status
+        return nil unless status_settings
 
         status_flag = status >= 200 && status < 400 ? :success : :fail
-        root_entity_class = status_setting[status] || status_setting[status_flag] || status_setting[:default]
-        return nil unless root_entity_class
-        
+        status_setting = status_settings[status] || status_settings[status_flag] || status_settings[:default]
+        return nil unless status_setting
+
+        root_entity_class = status_setting[:entity]
         exposures = root_entity_class.root_exposures.instance_eval { @exposures }
         exposure = exposures.find { |exposure| exposure.key == key }
         return nil unless exposure

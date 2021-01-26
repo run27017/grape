@@ -5,10 +5,21 @@ module Grape
     module Status
       include Grape::DSL::Settings
 
-      def status(code, klass = nil, &block)
+      def status(code, *params, &block)
         if code.is_a?(Symbol) && ![:success, :fail, :default].include?(code)
           raise ArgumentError: "Status code #{code} is invalid." unless Rack::Utils::SYMBOL_TO_STATUS_CODE.key?(code)
           code = Rack::Utils::SYMBOL_TO_STATUS_CODE[code]
+        end
+
+        message, klass = nil
+        if params.length > 2
+          raise ArgumentError, "wrong number of arguments (given #{params.length + 1}, expected 1..3)"
+        elsif params.length == 2
+          message, klass = params
+        elsif params.length == 1 && params[0].is_a?(String)
+          message = params[0]
+        else
+          klass = params[0]
         end
 
         unless klass
@@ -20,7 +31,7 @@ module Grape
         end
 
         status_setting = route_setting(:status) || {}
-        status_setting[code] = klass
+        status_setting[code] = { message: message, entity: klass }
         route_setting :status, status_setting
       end
 

@@ -21,8 +21,8 @@ module Grape
           subject.status 400, klass_400
 
           status_setting = subject.route_setting(:status)
-          expect(status_setting[200]).to eql(klass_200)
-          expect(status_setting[400]).to eql(klass_400)
+          expect(status_setting[200]).to include(entity: klass_200)
+          expect(status_setting[400]).to include(entity: klass_400)
         end
         
         it 'sets status code by symbol' do
@@ -33,8 +33,8 @@ module Grape
           subject.status :bad_request, klass_400
 
           status_setting = subject.route_setting(:status)
-          expect(status_setting[200]).to eql(klass_200)
-          expect(status_setting[400]).to eql(klass_400)
+          expect(status_setting[200]).to include(entity: klass_200)
+          expect(status_setting[400]).to include(entity: klass_400)
         end
 
         it 'sets entity class by block' do
@@ -45,10 +45,29 @@ module Grape
             def foo; end
           end
 
-          entity_class = subject.route_setting(:status)[200]
+          entity_class = subject.route_setting(:status)[200][:entity]
           expect(entity_class).to eql(current_class)
           expect(entity_class.superclass).to eql(Grape::Entity)
           expect(entity_class.instance_method(:foo)).to_not be_nil
+        end
+
+        it 'sets message and entity class' do
+          entity_class = Class.new(Grape::Entity)
+
+          subject.status 200, 'message', entity_class
+
+          status_setting = subject.route_setting(:status)
+          expect(status_setting[200]).to eq(entity: entity_class, message: 'message')
+        end
+
+        it 'sets message and block' do
+          subject.status 200, 'message' do
+            expose :foo
+          end
+
+          status_setting = subject.route_setting(:status)
+          expect(status_setting[200]).to include(message: 'message')
+          expect(status_setting[200][:entity]).to be < Grape::Entity
         end
       end
 
@@ -67,7 +86,7 @@ module Grape
 
             status_setting = subject.route_setting(:status)
             settings.each do |code, klass| 
-              expect(status_setting[code]).to eql(klass)
+              expect(status_setting[code]).to include(entity: klass)
             end
           end
         end
@@ -79,7 +98,7 @@ module Grape
             entity_class = Class.new(Grape::Entity)
 
             subject.send method, entity_class
-            expect(subject.route_setting(:status)[key]).to eql(entity_class)
+            expect(subject.route_setting(:status)[key]).to include(entity: entity_class)
           end
         end
         shared_examples 'validates status code' do |options|
