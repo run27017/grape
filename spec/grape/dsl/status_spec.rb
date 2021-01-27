@@ -4,7 +4,7 @@ require 'spec_helper'
 
 module Grape
   module DSL
-    module StatusSpec 
+    module StatusSpec
       class Dummy
         extend Grape::DSL::Status
       end
@@ -14,27 +14,27 @@ module Grape
 
       describe '.status' do
         it 'sets status code and entity class' do
-          klass_200 = Class.new
-          klass_400 = Class.new
+          sucess_entity = Class.new(Grape::Entity)
+          fail_entity = Class.new(Grape::Entity)
 
-          subject.status 200, klass_200
-          subject.status 400, klass_400
+          subject.status 200, sucess_entity
+          subject.status 400, fail_entity
 
           status_setting = subject.route_setting(:status)
-          expect(status_setting[200]).to include(entity: klass_200)
-          expect(status_setting[400]).to include(entity: klass_400)
+          expect(status_setting[200]).to include(entity: sucess_entity)
+          expect(status_setting[400]).to include(entity: fail_entity)
         end
-        
-        it 'sets status code by symbol' do
-          klass_200 = Class.new
-          klass_400 = Class.new
 
-          subject.status :ok, klass_200
-          subject.status :bad_request, klass_400
+        it 'sets status code by symbol' do
+          sucess_entity = Class.new(Grape::Entity)
+          fail_entity = Class.new(Grape::Entity)
+
+          subject.status :ok, sucess_entity
+          subject.status :bad_request, fail_entity
 
           status_setting = subject.route_setting(:status)
-          expect(status_setting[200]).to include(entity: klass_200)
-          expect(status_setting[400]).to include(entity: klass_400)
+          expect(status_setting[200]).to include(entity: sucess_entity)
+          expect(status_setting[400]).to include(entity: fail_entity)
         end
 
         it 'sets entity class by block' do
@@ -85,7 +85,7 @@ module Grape
             settings.each { |code, klass| subject.send method, code, klass }
 
             status_setting = subject.route_setting(:status)
-            settings.each do |code, klass| 
+            settings.each do |code, klass|
               expect(status_setting[code]).to include(entity: klass)
             end
           end
@@ -106,9 +106,9 @@ module Grape
             method = resolve_method(example)
             code = options[:code]
 
-            expect { 
+            expect do
               subject.send method, code, Class.new(Grape::Entity)
-            }.to raise_error(ArgumentError)
+            end.to raise_error(ArgumentError)
           end
         end
 

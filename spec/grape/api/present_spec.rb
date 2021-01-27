@@ -3,6 +3,7 @@
 require 'spec_helper'
 require 'shared/versioning_examples'
 
+# rubocop:disable Security/Eval
 describe Grape::API do
   subject { Class.new(Grape::API) }
 
@@ -33,7 +34,7 @@ describe Grape::API do
 
         get '/'
         expect(last_response.status).to eql 200
-        expect(eval last_response.body).to eql(a: 1, b: 'entity_class')
+        expect(eval(last_response.body)).to eql(a: 1, b: 'entity_class')
       end
 
       it 'resolves entity class based on entity name' do
@@ -51,7 +52,7 @@ describe Grape::API do
 
         get '/'
         expect(last_response.status).to eql 200
-        expect(eval last_response.body).to eql(a: 1, b: 'entity_class')
+        expect(eval(last_response.body)).to eql(a: 1, b: 'entity_class')
       end
 
       it 'presents without defining status' do
@@ -68,7 +69,7 @@ describe Grape::API do
 
         get '/'
         expect(last_response.status).to eql 200
-        expect(eval last_response.body).to eql(a: 1, b: 'entity_class')
+        expect(eval(last_response.body)).to eql(a: 1, b: 'entity_class')
       end
 
       it 'supports namespace scope' do
@@ -79,21 +80,21 @@ describe Grape::API do
         end
         subject.namespace '/foo' do
           get do
-            present :value, 'foo' 
+            present :value, 'foo'
           end
 
           put do
-            present :value, 'bar' 
+            present :value, 'bar'
           end
         end
 
         get '/foo'
         expect(last_response.status).to eql 200
-        expect(eval last_response.body).to eql(value: 'entity_class')
+        expect(eval(last_response.body)).to eql(value: 'entity_class')
 
         put '/foo'
         expect(last_response.status).to eql 200
-        expect(eval last_response.body).to eql(value: 'entity_class')
+        expect(eval(last_response.body)).to eql(value: 'entity_class')
       end
     end
 
@@ -114,7 +115,7 @@ describe Grape::API do
 
           get '/'
           expect(last_response.status).to eql 400
-          expect(eval last_response.body).to eql(a: 1, b: 'entity_class')
+          expect(eval(last_response.body)).to eql(a: 1, b: 'entity_class')
         end
       end
     end
@@ -134,12 +135,12 @@ describe Grape::API do
           subject.namespace '/foo' do
             get '/success' do
               status 200
-              present :value, nil 
+              present :value, nil
             end
 
             get '/fail' do
               status 400
-              present :value, nil 
+              present :value, nil
             end
           end
         end
@@ -147,15 +148,16 @@ describe Grape::API do
         it 'is resolved as default success entity class' do
           get '/foo/success'
           expect(last_response.status).to eql 200
-          expect(eval last_response.body).to eql(value: 'success')
+          expect(eval(last_response.body)).to eql(value: 'success')
         end
 
         it 'is resolved as default fail entity class' do
           get '/foo/fail'
           expect(last_response.status).to eql 400
-          expect(eval last_response.body).to eql(value: 'fail')
+          expect(eval(last_response.body)).to eql(value: 'fail')
         end
       end
     end
   end
 end
+# rubocop:enable Security/Eval

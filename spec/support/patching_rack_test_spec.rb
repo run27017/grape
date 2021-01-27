@@ -14,6 +14,7 @@ describe Grape::API do
       expose :name
       expose :age
     end
+
     class User
       attr_accessor :id, :name, :age, :created_at
 
@@ -41,25 +42,25 @@ describe Grape::API do
   describe 'disassemble api invoking' do
     let(:env) do
       {
-        "rack.version"=>[1, 3],
-        "rack.input"=> StringIO.new,
-        "rack.errors"=> StringIO.new,
-        "rack.multithread"=>true,
-        "rack.multiprocess"=>true,
-        "rack.run_once"=>false,
-        "REQUEST_METHOD"=>"GET",
-        "SERVER_NAME"=>"example.org",
-        "SERVER_PORT"=>"80",
-        "QUERY_STRING"=>"",
-        "PATH_INFO"=>"/",
-        "rack.url_scheme"=>"http",
-        "HTTPS"=>"off",
-        "SCRIPT_NAME"=>"",
-        "CONTENT_LENGTH"=>"0",
-        "rack.test"=>true,
-        "REMOTE_ADDR"=>"127.0.0.1",
-        "HTTP_HOST"=>"example.org",
-        "HTTP_COOKIE"=>""
+        'rack.version' => [1, 3],
+        'rack.input' => StringIO.new,
+        'rack.errors' => StringIO.new,
+        'rack.multithread' => true,
+        'rack.multiprocess' => true,
+        'rack.run_once' => false,
+        'REQUEST_METHOD' => 'GET',
+        'SERVER_NAME' => 'example.org',
+        'SERVER_PORT' => '80',
+        'QUERY_STRING' => '',
+        'PATH_INFO' => '/',
+        'rack.url_scheme' => 'http',
+        'HTTPS' => 'off',
+        'SCRIPT_NAME' => '',
+        'CONTENT_LENGTH' => '0',
+        'rack.test' => true,
+        'REMOTE_ADDR' => '127.0.0.1',
+        'HTTP_HOST' => 'example.org',
+        'HTTP_COOKIE' => ''
       }
     end
 
@@ -71,7 +72,7 @@ describe Grape::API do
     end
 
     it 'invokes by instance call' do
-      code, headers, body = subject.new.call(env)
+      _code, _headers, _body = subject.new.call(env)
       endpoint = env[Grape::Env::API_ENDPOINT]
 
       body = endpoint.body
@@ -81,18 +82,20 @@ describe Grape::API do
   end
 
   describe 'patching last_env' do
-    module Rack::Test
-      module Methods
-        def_delegators :current_session, :last_env
-      end
+    module Rack
+      module Test
+        module Methods
+          def_delegators :current_session, :last_env
+        end
 
-      class Session
-        attr_reader :last_env
+        class Session
+          attr_reader :last_env
 
-        def custom_request(verb, uri, params = {}, env = {}, &block)
-          uri = parse_uri(uri, env)
-          @last_env = env_for(uri, env.merge(method: verb.to_s.upcase, params: params))
-          process_request(uri, @last_env, &block)
+          def custom_request(verb, uri, params = {}, env = {}, &block)
+            uri = parse_uri(uri, env)
+            @last_env = env_for(uri, env.merge(method: verb.to_s.upcase, params: params))
+            process_request(uri, @last_env, &block)
+          end
         end
       end
     end

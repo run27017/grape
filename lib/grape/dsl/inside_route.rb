@@ -354,7 +354,7 @@ module Grape
                         [nil, args.first]
                       end
         entity_class = entity_class_from_key(key)
-        entity_class = entity_class_for_obj(object, options) unless entity_class
+        entity_class ||= entity_class_for_obj(object, options)
 
         root = options.delete(:root)
 
@@ -398,7 +398,7 @@ module Grape
 
         root_entity_class = status_setting[:entity]
         exposures = root_entity_class.root_exposures.instance_eval { @exposures }
-        exposure = exposures.find { |exposure| exposure.key == key }
+        exposure = exposures.find { |expo| expo.key == key }
         return nil unless exposure
 
         entity_class = exposure.try(:using_class_name)
