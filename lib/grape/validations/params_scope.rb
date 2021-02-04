@@ -145,17 +145,23 @@ module Grape
         if context == :all
           optional_fields = Array(opts[:except])
           required_fields = opts[:using].keys - optional_fields
-        else # context == :none
+        elsif context == :none
           required_fields = Array(opts[:except])
           optional_fields = opts[:using].keys - required_fields
+        else # context == :some
+          required_fields = opts[:using].keys.find_all { |key| opts[:using][key][:required] }
+          optional_fields = opts[:using].keys - required_fields
         end
+
         required_fields.each do |field|
           field_opts = opts[:using][field]
           raise ArgumentError, "required field not exist: #{field}" unless field_opts
+          field_opts.delete(:required)
           requires(field, field_opts)
         end
         optional_fields.each do |field|
           field_opts = opts[:using][field]
+          field_opts.delete(:required)
           optional(field, field_opts) if field_opts
         end
       end

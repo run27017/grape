@@ -248,6 +248,41 @@ describe Grape::Validations do
       end
     end
 
+    context 'requires :some using Grape::Entity documentation' do
+      def define_requires_none
+        documentation = {
+          required_field: { type: String, required: true },
+          optional_field: { type: String }
+        }
+        subject.params do
+          requires :some, using: documentation
+        end
+      end
+      before do
+        define_requires_none
+        subject.get '/required' do
+          'required works'
+        end
+      end
+
+      it 'adds entity documentation to declared params' do
+        define_requires_none
+        expect(declared_params).to eq(%i[required_field optional_field])
+      end
+
+      it 'errors when required_field is not present' do
+        get '/required'
+        expect(last_response.status).to eq(400)
+        expect(last_response.body).to eq('required_field is missing')
+      end
+
+      it 'works when required_field is present' do
+        get '/required', required_field: 'woof'
+        expect(last_response.status).to eq(200)
+        expect(last_response.body).to eq('required works')
+      end
+    end
+
     context 'requires :all or :none but except a non-existent field using Grape::Entity documentation' do
       context 'requires :all' do
         def define_requires_all
