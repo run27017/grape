@@ -22,12 +22,8 @@ module Grape
           klass = params[0]
         end
 
-        unless klass
-          if block
-            klass = Class.new(Grape::Entity, &block)
-          else
-            raise ArgumentError, 'It should pass an entity class or a block'
-          end
+        if klass.nil? && block_given?
+          klass = Class.new(Grape::Entity, &block)
         end
 
         status_setting = route_setting(:status) || {}

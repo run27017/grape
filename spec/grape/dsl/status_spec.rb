@@ -69,6 +69,14 @@ module Grape
           expect(status_setting[200]).to include(message: 'message')
           expect(status_setting[200][:entity]).to be < Grape::Entity
         end
+
+        it 'sets code and message' do
+          subject.status 200, 'message'
+
+          status_setting = subject.route_setting(:status)
+          expect(status_setting[200]).to include(message: 'message')
+          expect(status_setting[200][:entity]).to be_nil
+        end
       end
 
       describe 'alias methods' do
