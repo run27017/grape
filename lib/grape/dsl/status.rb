@@ -26,7 +26,7 @@ module Grape
           if block
             klass = Class.new(Grape::Entity, &block)
           else
-            throw ArgumentError, 'It should pass an entity class or a block'
+            raise ArgumentError, 'It should pass an entity class or a block'
           end
         end
 

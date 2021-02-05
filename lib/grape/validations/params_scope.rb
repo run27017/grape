@@ -161,8 +161,10 @@ module Grape
         end
         optional_fields.each do |field|
           field_opts = opts[:using][field]
-          field_opts.delete(:required)
-          optional(field, field_opts) if field_opts
+          if field_opts
+            field_opts.delete(:required)
+            optional(field, field_opts)
+          end
         end
       end
 
