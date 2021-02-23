@@ -22,9 +22,7 @@ module Grape
           klass = params[0]
         end
 
-        if klass.nil? && block_given?
-          klass = Class.new(Grape::Entity, &block)
-        end
+        klass = Class.new(Grape::Entity, &block) if klass.nil? && block
 
         status_setting = route_setting(:status) || {}
         status_setting[code] = { message: message, entity: klass }
