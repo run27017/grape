@@ -1,18 +1,18 @@
-### 1.5.2 (Next)
+### 1.5.2 (2021/02/06)
 
 #### Features
 
-* Your contribution here.
+* [#2157](https://github.com/ruby-grape/grape/pull/2157): Custom types can set a message to be used in the response when invalid - [@dnesteryuk](https://github.com/dnesteryuk).
 * [#2145](https://github.com/ruby-grape/grape/pull/2145): Ruby 3.0 compatibility - [@ericproulx](https://github.com/ericproulx).
 * [#2143](https://github.com/ruby-grape/grape/pull/2143): Enable GitHub Actions with updated RuboCop and Danger - [@anakinj](https://github.com/anakinj).
 
 #### Fixes
 
-* Your contribution here.
 * [#2144](https://github.com/ruby-grape/grape/pull/2144): Fix compatibility issue with activesupport 6.1 and XML serialization of arrays - [@anakinj](https://github.com/anakinj).
 * [#2137](https://github.com/ruby-grape/grape/pull/2137): Fix typos - [@johnny-miyake](https://github.com/johnny-miyake).
 * [#2131](https://github.com/ruby-grape/grape/pull/2131): Fix Ruby 2.7 keyword deprecation warning in validators/coerce - [@K0H205](https://github.com/K0H205).
 * [#2132](https://github.com/ruby-grape/grape/pull/2132): Use #ruby2_keywords for correct delegation on Ruby <= 2.6, 2.7 and 3 - [@eregon](https://github.com/eregon).
+* [#2152](https://github.com/ruby-grape/grape/pull/2152): Fix configuration method inside namespaced params - [@fsainz](https://github.com/fsainz).
 
 ### 1.5.1 (2020/11/15)
 
@@ -637,7 +637,7 @@
 * [#492](https://github.com/ruby-grape/grape/pull/492): Don't allow to have nil value when a param is required and has a list of allowed values - [@Antti](https://github.com/Antti).
 * [#495](https://github.com/ruby-grape/grape/pull/495): Fixed `ParamsScope#params` for parameters nested inside arrays - [@asross](https://github.com/asross).
 * [#498](https://github.com/ruby-grape/grape/pull/498): Dry'ed up options and headers logic, allow headers to be passed to OPTIONS requests - [@karlfreeman](https://github.com/karlfreeman).
-* [#500](https://github.com/ruby-grape/grape/pull/500): Skip entity auto-detection when explicitely passed - [@yaneq](https://github.com/yaneq).
+* [#500](https://github.com/ruby-grape/grape/pull/500): Skip entity auto-detection when explicitly passed - [@yaneq](https://github.com/yaneq).
 * [#503](https://github.com/ruby-grape/grape/pull/503): Calling declared(params) from child namespace fails to include parent namespace defined params - [@myitcv](https://github.com/myitcv).
 * [#512](https://github.com/ruby-grape/grape/pull/512): Don't create `Grape::Request` multiple times - [@dblock](https://github.com/dblock).
 * [#538](https://github.com/ruby-grape/grape/pull/538): Fixed default values for grouped params - [@dm1try](https://github.com/dm1try).

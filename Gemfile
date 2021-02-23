@@ -36,3 +36,7 @@ group :test do
   gem 'rspec', '~> 3.0'
   gem 'ruby-grape-danger', '~> 0.2.0', require: false
 end
+
+platforms :jruby do
+  gem 'racc'
+end
