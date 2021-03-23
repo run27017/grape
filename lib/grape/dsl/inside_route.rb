@@ -347,12 +347,12 @@ module Grape
       #       admin: current_user.admin?
       #   end
       def present(*args)
-        options = args.count > 1 ? args.extract_options! : {}
-        key, object = if args.count == 2 && args.first.is_a?(Symbol)
-                        args
+        key, object = if args.count >= 2 && args.first.is_a?(Symbol)
+                        args.shift(2)
                       else
-                        [nil, args.first]
+                        [nil, args.shift]
                       end
+        options = args.count >= 1 ? args.shift : {}
         entity_class = entity_class_from_key(key)
         entity_class ||= entity_class_for_obj(object, options)
 

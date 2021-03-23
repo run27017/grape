@@ -323,12 +323,14 @@ XML
           present :page, 1
           present :user1, user1, with: entity
           present :user2, user2, with: entity
+          present :hash, { name: 'user3' }
         end
         get '/example'
         expect_response_json = {
           'page'  => 1,
           'user1' => { 'name' => 'user1' },
-          'user2' => { 'name' => 'user2' }
+          'user2' => { 'name' => 'user2' },
+          'hash' => { 'name' => 'user3' }
         }
         expect(JSON(last_response.body)).to eq(expect_response_json)
       end
