@@ -38,6 +38,19 @@ describe Grape::API do
           expect(eval(last_response.body)).to eql(a: 1, b: 'entity_class')
         end
 
+        it 'throws error when presenting undefined fields' do
+          subject.status 200 do
+            expose :a
+          end
+          subject.get do
+            status 200
+            present :a, 1
+            present :b, 1
+          end
+
+          expect{ get('/') }.to raise_error(KeyError)
+        end
+
         it 'resolves entity class based on entity name' do
           Entity_02 = inspected_entity_class
 

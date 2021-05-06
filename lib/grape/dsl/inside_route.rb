@@ -399,7 +399,7 @@ module Grape
         root_entity_class = status_setting[:entity]
         exposures = root_entity_class.root_exposures.instance_eval { @exposures }
         exposure = exposures.find { |expo| expo.key == key }
-        return nil unless exposure
+        raise KeyError, "The key `#{key}` must be defined when using status dsl" unless exposure
 
         entity_class = exposure.try(:using_class_name)
         return nil unless entity_class
