@@ -3,6 +3,21 @@
 require 'spec_helper'
 
 describe Grape::API do
+  class UserEntity < Grape::Entity
+    expose :name
+    expose :age
+  end
+
+  class User
+    attr_accessor :id, :name, :age, :created_at
+
+    def initialize(attrs = {})
+      attrs.each do |name, value|
+        send "#{name}=", value
+      end
+    end
+  end
+
   subject { Class.new(Grape::API) }
 
   def app
@@ -10,20 +25,6 @@ describe Grape::API do
   end
 
   before do
-    class UserEntity < Grape::Entity
-      expose :name
-      expose :age
-    end
-
-    class User
-      attr_accessor :id, :name, :age, :created_at
-
-      def initialize(attrs = {})
-        attrs.each do |name, value|
-          send "#{name}=", value
-        end
-      end
-    end
 
     subject.get do
       user = User.new(
