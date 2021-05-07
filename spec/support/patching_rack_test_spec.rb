@@ -25,7 +25,6 @@ describe Grape::API do
   end
 
   before do
-
     subject.get do
       user = User.new(
         id: 1,

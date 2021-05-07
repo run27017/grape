@@ -341,7 +341,7 @@ describe Grape::Validations do
 
         it 'adds entity documentation to declared params' do
           define_requires_all
-          expect(declared_params).to eq([{:nesting_field=>[:field_one, :field_two]}, :optional_field])
+          expect(declared_params).to eq([{nesting_field: %i[field_one field_two]}, :optional_field])
         end
 
         it 'errors when required_field is not present' do
@@ -356,43 +356,42 @@ describe Grape::Validations do
           expect(last_response.body).to eq('required works')
         end
       end
-    context 'requires :some' do
-      def define_requires_none
-        documentation = {
-          nesting_field: { type: Hash, nesting: {
-            required_field: { type: String, required: true },
-            optional_field: { type: String }
-          } }
-        }
-        subject.params do
-          requires :some, using: documentation
+      context 'requires :some' do
+        def define_requires_none
+          documentation = {
+            nesting_field: { type: Hash, nesting: {
+              required_field: { type: String, required: true },
+              optional_field: { type: String }
+            } }
+          }
+          subject.params do
+            requires :some, using: documentation
+          end
+        end
+        before do
+          define_requires_none
+          subject.get '/required' do
+            'required works'
+          end
+        end
+
+        it 'adds entity documentation to declared params' do
+          define_requires_none
+          expect(declared_params).to eq([{nesting_field: %i[required_field optional_field]}])
+        end
+
+        it 'errors when required_field is not present' do
+          get '/required', nesting_field: { optional_field: 'woof' }
+          expect(last_response.status).to eq(400)
+          expect(last_response.body).to eq('nesting_field[required_field] is missing')
+        end
+
+        it 'works when required_field is present' do
+          get '/required', nesting_field: { required_field: 'woof' }
+          expect(last_response.status).to eq(200)
+          expect(last_response.body).to eq('required works')
         end
       end
-      before do
-        define_requires_none
-        subject.get '/required' do
-          'required works'
-        end
-      end
-
-      it 'adds entity documentation to declared params' do
-        define_requires_none
-        expect(declared_params).to eq([{:nesting_field=>[:required_field, :optional_field]}])
-      end
-
-      it 'errors when required_field is not present' do
-        get '/required', nesting_field: { optional_field: 'woof' }
-        expect(last_response.status).to eq(400)
-        expect(last_response.body).to eq('nesting_field[required_field] is missing')
-      end
-
-      it 'works when required_field is present' do
-        get '/required', nesting_field: { required_field: 'woof' }
-        expect(last_response.status).to eq(200)
-        expect(last_response.body).to eq('required works')
-      end
-    end
-
     end
 
     context 'required with an Array block' do

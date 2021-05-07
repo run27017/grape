@@ -2,7 +2,7 @@
 
 module Grape
   module Validations
-    class ParamsScope
+    class ParamsScope # rubocop:disable Metrics/ClassLength
       attr_accessor :element, :parent, :index
       attr_reader :type
 
@@ -141,7 +141,7 @@ module Grape
 
       private
 
-      def require_required_and_optional_fields(context, opts)
+      def require_required_and_optional_fields(context, opts) # rubocop:disable Metrics/MethodLength
         case context
         when :all
           optional_fields = Array(opts[:except])
@@ -168,15 +168,14 @@ module Grape
         end
         optional_fields.each do |field|
           field_opts = opts[:using][field]
-          if field_opts
-            nesting_opts = field_opts.delete(:nesting)
-            if nesting_opts
-              optional(field, field_opts) do
-                require_required_and_optional_fields(context, using: nesting_opts)
-              end
-            else
-              optional(field, field_opts)
+          next unless field_opts
+          nesting_opts = field_opts.delete(:nesting)
+          if nesting_opts
+            optional(field, field_opts) do
+              require_required_and_optional_fields(context, using: nesting_opts)
             end
+          else
+            optional(field, field_opts)
           end
         end
       end

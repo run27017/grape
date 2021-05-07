@@ -48,7 +48,7 @@ describe Grape::API do
             present :b, 1
           end
 
-          expect{ get('/') }.to raise_error(KeyError)
+          expect { get('/') }.to raise_error(KeyError)
         end
 
         it 'resolves entity class based on entity name' do

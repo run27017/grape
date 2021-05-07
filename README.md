@@ -158,7 +158,8 @@ content negotiation, versioning and much more.
 
 ## Stable Release
 
-You're reading the documentation for the stable release of Grape, 1.5.2.
+You're reading the documentation for the stable release of Grape, **v1.5.3**.
+Please read [UPGRADING](UPGRADING.md) when upgrading from a previous version.
 
 ## Project Resources
 
@@ -1226,6 +1227,7 @@ params do
   end
 end
 ```
+Note that, a `nil` value will call the custom coercion method, while a missing parameter will not.
 
 Example of use of `coerce_with` with a lambda (a class with a `parse` method could also have been used)
 It will parse a string and return an Array of Integers, matching the `Array[Integer]` `type`.
